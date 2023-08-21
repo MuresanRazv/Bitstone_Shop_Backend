@@ -26,7 +26,8 @@ export const cartSchema = new Schema<CartInterface>({
         required: true
     },
     totalProducts: Number,
-    totalQuantity: Number
+    totalQuantity: Number,
+    discountedTotal: Number
 })
 
 const CartModel = model('cart', cartSchema)

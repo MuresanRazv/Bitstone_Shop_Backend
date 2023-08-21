@@ -4,8 +4,8 @@ export interface ProductInterface {
     id: number,
     title: string,
     description?: string,
-    price?: number,
-    discountPercentage?: number,
+    price: number,
+    discountPercentage: number,
     rating?: number,
     brand?: string,
     category?: string,
@@ -27,7 +27,10 @@ export const productSchema = new Schema<ProductInterface>({
         type: Number,
         required: true
     },
-    discountPercentage: Number,
+    discountPercentage: {
+        type: Number,
+        required: true
+    },
     rating: Number,
     brand: String,
     category: String,
@@ -41,8 +44,8 @@ export interface CartProductInterface {
     price: number,
     quantity: number,
     total: number,
-    discountPercentage?: number,
-    discountedPrice?: number,
+    discountPercentage: number,
+    discountedPrice: number,
     thumbnail?: string
 }
 
@@ -67,8 +70,14 @@ export const cartProductSchema = new Schema<CartProductInterface>({
         type: Number,
         required: true
     },
-    discountPercentage: Number,
-    discountedPrice: Number,
+    discountPercentage: {
+        type: Number,
+        required: true
+    },
+    discountedPrice: {
+        type: Number,
+        required: true
+    },
     thumbnail: String
 })
 

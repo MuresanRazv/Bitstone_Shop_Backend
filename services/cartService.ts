@@ -1,6 +1,7 @@
 import CartModel, {CartInterface} from "../models/cart.js";
 import mongoose from "mongoose";
 import {CartProductInterface} from "../models/product.js";
+import {getProductById} from "./productsService.js";
 
 await mongoose.connect('mongodb://127.0.0.1:27017/shop')
 
@@ -45,13 +46,39 @@ export async function updateCart(cartID: number, products: CartProductInterface[
                 productFromCart.quantity += product.quantity
                 productFromCart.total = productFromCart.price * productFromCart.quantity
             }
+            else {
+                let currentProduct = await getProductById(product.id)
+                let newProduct: CartProductInterface = {
+                    id: currentProduct.id,
+                    quantity: 1,
+                    price: currentProduct.price,
+                    total: currentProduct.price,
+                    title: currentProduct.title,
+                    thumbnail: currentProduct.thumbnail,
+                    discountPercentage: currentProduct.discountPercentage,
+                    discountedPrice: currentProduct.price - currentProduct.price * currentProduct.discountPercentage / 100
+                }
+                cart.products.push(newProduct)
+            }
         }
 
         // filter any products that have <= 0 quantity
         cart.products = cart.products.filter((product) => product.quantity > 0)
 
+        cart.totalProducts = cart.products.length
+        cart.totalQuantity = cart.products.reduce((a, b) => a + b.quantity, 0)
+        cart.total = cart.products.reduce((a, b) => a + b.total, 0)
+        cart.discountedTotal = cart.products.reduce((a, b) => a + b.total - b.total * b.discountPercentage / 100, 0)
+
         // update the cart in db
-        return await CartModel.findOneAndUpdate({ id: cartID }, { products: cart.products }, { new: true })
+        return CartModel.findOneAndUpdate({id: cartID},
+            {
+                products: cart.products,
+                totalProducts: cart.totalProducts,
+                totalQuantity: cart.totalQuantity,
+                total: cart.total,
+                discountedTotal: cart.discountedTotal
+            }, {new: true});
     } catch (err) {
         console.log(`Error updating cart ${err}`)
     }
