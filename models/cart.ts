@@ -6,7 +6,7 @@ export interface CartInterface {
     products: CartProductInterface[],
     total?: number,
     discountedTotal?: number,
-    userID: number,
+    userId: number,
     totalProducts?: number,
     totalQuantity?: number
 }
@@ -21,7 +21,7 @@ export const cartSchema = new Schema<CartInterface>({
         required: true
     },
     total: Number,
-    userID: {
+    userId: {
         type: Number,
         required: true
     },

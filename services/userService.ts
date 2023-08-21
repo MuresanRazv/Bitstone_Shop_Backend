@@ -8,10 +8,12 @@ export async function getUserById(id: number): Promise<UserInterface> {
     return await UserModel.find({"id": id}, {"_id": 0}).then((data) => data[0] as UserInterface)
 }
 
-export async function addUser(user: UserInterface) {
+export async function addUser(user: any) {
     try {
-        await UserModel.create(user)
+        user.id = await UserModel.count() + 1
+        let newUser = await UserModel.create(user)
         await createEmptyCart(user.id)
+        return newUser
     } catch (err) {
         console.log(`Error creating user ${err}`)
     }

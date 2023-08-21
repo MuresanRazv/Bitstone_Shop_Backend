@@ -16,7 +16,7 @@ export async function createEmptyCart(userID: number) {
         discountedTotal: 0,
         totalProducts: 0,
         totalQuantity: 0,
-        userID: userID
+        userId: userID
     }
     await CartModel.create(newCart)
 }
