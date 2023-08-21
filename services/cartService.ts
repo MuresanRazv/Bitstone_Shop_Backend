@@ -46,7 +46,7 @@ export async function updateCart(cartID: number, products: CartProductInterface[
                 productFromCart.quantity += product.quantity
                 productFromCart.total = productFromCart.price * productFromCart.quantity
             }
-            else {
+            else if (product.quantity > 0) {
                 let currentProduct = await getProductById(product.id)
                 let newProduct: CartProductInterface = {
                     id: currentProduct.id,
