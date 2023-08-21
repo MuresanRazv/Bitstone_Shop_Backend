@@ -1,9 +1,9 @@
 import {Schema, model} from "mongoose";
-import ProductModel, {ProductInterface, productSchema} from "./product.js";
+import {CartProductInterface, cartProductSchema} from "./product.js";
 
 export interface CartInterface {
     id: number,
-    products: ProductInterface[],
+    products: CartProductInterface[],
     total?: number,
     discountedTotal?: number,
     userID: number,
@@ -17,7 +17,7 @@ export const cartSchema = new Schema<CartInterface>({
         required: true
     },
     products: {
-        type: [productSchema],
+        type: [cartProductSchema],
         required: true
     },
     total: Number,

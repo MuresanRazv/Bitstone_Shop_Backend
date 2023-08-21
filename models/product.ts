@@ -35,5 +35,43 @@ export const productSchema = new Schema<ProductInterface>({
     images: [String]
 })
 
+export interface CartProductInterface {
+    id: number,
+    title: string,
+    price: number,
+    quantity: number,
+    total: number,
+    discountPercentage?: number,
+    discountedPrice?: number,
+    thumbnail?: string
+}
+
+export const cartProductSchema = new Schema<CartProductInterface>({
+    id: {
+        type: Number,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    total: {
+        type: Number,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
+    },
+    discountPercentage: Number,
+    discountedPrice: Number,
+    thumbnail: String
+})
+
 const ProductModel = model('product', productSchema)
+export const CartProductModel = model('cart_product', cartProductSchema)
 export default ProductModel
