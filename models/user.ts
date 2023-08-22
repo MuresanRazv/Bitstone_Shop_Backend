@@ -6,7 +6,8 @@ export interface UserInterface {
     age?: number,
     email: string,
     username: string,
-    password: string
+    password: string,
+    token?: string
 }
 
 export interface UserLoginInterface {
@@ -33,7 +34,8 @@ export const userSchema = new Schema<UserInterface>({
     password: {
         type: String,
         required: true
-    }
+    },
+    token: String
 })
 
 const UserModel = model('user', userSchema)

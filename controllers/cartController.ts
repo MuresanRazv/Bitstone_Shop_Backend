@@ -3,7 +3,7 @@ import {CartProductInterface} from "../models/product.js";
 import {getProductById} from "./productController.js";
 
 export async function getCartById(id: number): Promise<CartInterface> {
-    return await CartModel.find({"id": id}, {"_id": 0}).then((data) => data[0] as CartInterface)
+    return await CartModel.find({"userId": id}, {"_id": 0}).then((data) => data[0])
 }
 
 export async function createEmptyCart(userID: number) {
