@@ -1,9 +1,6 @@
 import CartModel, {CartInterface} from "../models/cart.js";
-import mongoose from "mongoose";
 import {CartProductInterface} from "../models/product.js";
-import {getProductById} from "./productsService.js";
-
-await mongoose.connect('mongodb://127.0.0.1:27017/shop')
+import {getProductById} from "./productController.js";
 
 export async function getCartById(id: number): Promise<CartInterface> {
     return await CartModel.find({"id": id}, {"_id": 0}).then((data) => data[0] as CartInterface)
@@ -20,11 +17,6 @@ export async function createEmptyCart(userID: number) {
         userId: userID
     }
     await CartModel.create(newCart)
-}
-
-export async function getQuantityOfProduct(cardID: number, productID: number) {
-    let cart = await getCartById(cardID)
-    return cart.products.filter(product => product.id === productID).length
 }
 
 function getProduct(productID: number, products: CartProductInterface[]): {} | CartProductInterface {

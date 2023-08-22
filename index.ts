@@ -20,8 +20,8 @@ const app = express(),
     port = 3000
 
 app.use('/products', productsRouter)
-app.use('/', cartRouter)
-app.use('/', userRouter)
+app.use('/cart', cartRouter)
+app.use('/user', userRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

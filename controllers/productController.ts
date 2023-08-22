@@ -1,7 +1,4 @@
 import ProductModel, {ProductInterface} from "../models/product.js";
-import mongoose from "mongoose";
-
-await mongoose.connect('mongodb://127.0.0.1:27017/shop')
 
 export async function getAllProducts() {
     let query = await ProductModel.findOne({}, {"_id": 0}).where('price').gt(1).exec().then((data) => data)
