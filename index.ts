@@ -1,8 +1,10 @@
 import mongoose from 'mongoose'
 import express from 'express'
+import cors from 'cors'
 import productsRouter from "./routes/productRoute.js";
 import {cartRouter} from "./routes/cartRoute.js";
 import {userRouter} from "./routes/userRoute.js";
+
 
 const connectDB = async () => {
     try {
@@ -19,6 +21,7 @@ connectDB()
 const app = express(),
     port = 3000
 
+app.use(cors())
 app.use('/products', productsRouter)
 app.use('/cart', cartRouter)
 app.use('/user', userRouter)

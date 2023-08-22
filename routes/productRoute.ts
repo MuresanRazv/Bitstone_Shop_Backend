@@ -9,8 +9,7 @@ productsRouter.get('/product', async (req: any, res: any) => {
     const limit = req.query.limit ? req.query.limit: undefined
     const categories = req.query.categories ? req.query.categories.split(",") : undefined
     if (id) res.json(await getProductById(id))
-    if (skip || limit || categories)
-        res.json(await getProducts(skip, limit, categories))
+    else res.json(await getProducts(skip, limit, categories))
 })
 
 export default productsRouter
