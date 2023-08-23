@@ -1,18 +1,17 @@
 import UserModel, {UserInterface, UserLoginInterface} from "../models/user.js";
 import {createEmptyCart} from "./cartController.js";
-import { v4 as uuidv4 } from 'uuid';
-import {throws} from "assert";
+import {v4 as uuidv4} from 'uuid';
 
 export async function getUserById(id: number): Promise<UserInterface> {
     return UserModel.find({"id": id}, {"_id": 0}).then((data) => data[0])
 }
 
 export async function getUserByToken(token: string): Promise<UserInterface> {
-    return UserModel.find({"token": token}, {"_id": 0}).then((data) => data[0])
+    return await UserModel.find({"token": token}, {"_id": 0}).then((data) => data[0])
 }
 
 export async function updateToken(userID: number | undefined, token: string) {
-    UserModel.findOneAndUpdate({"id": userID}, {
+    await UserModel.findOneAndUpdate({"id": userID}, {
         "token": token
     })
 }
@@ -49,17 +48,18 @@ export async function loginUser(user: UserLoginInterface) {
     }
 
     let token = uuidv4()
+
     if (userByUsername) {
         const userByPassword = await UserModel.findOne({"password": user.password})
         if (!userByPassword)
             throw new Error("Invalid password!")
-        updateToken(userByUsername.id, token).catch(e => console.log(e))
+        await updateToken(userByUsername.id, token).catch(e => console.log(e))
     }
     else if (userByEmail) {
         const userByPassword = await UserModel.findOne({"password": user.password})
         if (!userByPassword)
             throw new Error("Invalid password!")
-        updateToken(userByEmail.id, token).catch(e => console.log(e))
+        await updateToken(userByEmail.id, token).catch(e => console.log(e))
     }
 
     return token
