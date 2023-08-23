@@ -1,9 +1,15 @@
 import CartModel, {CartInterface} from "../models/cart.js";
 import {CartProductInterface} from "../models/product.js";
 import {getProductById} from "./productController.js";
+import {getUserByToken} from "./userController.js";
 
 export async function getCartById(id: number): Promise<CartInterface> {
     return await CartModel.find({"userId": id}, {"_id": 0}).then((data) => data[0])
+}
+
+export async function getCartByToken(token: string): Promise<CartInterface> {
+    let user = await getUserByToken(token)
+    return await getCartById(user?.id).then(data => data)
 }
 
 export async function createEmptyCart(userID: number) {
@@ -16,7 +22,7 @@ export async function createEmptyCart(userID: number) {
         totalQuantity: 0,
         userId: userID
     }
-    await CartModel.create(newCart)
+    CartModel.create(newCart).then()
 }
 
 function getProduct(productID: number, products: CartProductInterface[]): {} | CartProductInterface {
@@ -27,9 +33,9 @@ function getProduct(productID: number, products: CartProductInterface[]): {} | C
     return {}
 }
 
-export async function updateCart(cartID: number, products: CartProductInterface[]) {
+export async function updateCart(token: string, products: CartProductInterface[]) {
     try {
-        let cart = await getCartById(cartID)
+        let cart = await getCartByToken(token)
 
         // update products quantity
         for (let product of products) {
@@ -63,7 +69,7 @@ export async function updateCart(cartID: number, products: CartProductInterface[
         cart.discountedTotal = cart.products.reduce((a, b) => a + b.total - b.total * b.discountPercentage / 100, 0)
 
         // update the cart in db
-        return CartModel.findOneAndUpdate({id: cartID},
+        return CartModel.findOneAndUpdate({id: cart.id},
             {
                 products: cart.products,
                 totalProducts: cart.totalProducts,

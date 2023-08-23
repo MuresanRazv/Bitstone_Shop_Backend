@@ -9,7 +9,7 @@ export interface ProductInterface {
     rating?: number,
     brand?: string,
     category?: string,
-    thumbnail?: string,
+    thumbnail: string,
     images?: string[]
 }
 
@@ -34,7 +34,10 @@ export const productSchema = new Schema<ProductInterface>({
     rating: Number,
     brand: String,
     category: String,
-    thumbnail: String,
+    thumbnail: {
+        type: String,
+        required: true
+    },
     images: [String]
 })
 
@@ -46,7 +49,7 @@ export interface CartProductInterface {
     total: number,
     discountPercentage: number,
     discountedPrice: number,
-    thumbnail?: string
+    thumbnail: string
 }
 
 export const cartProductSchema = new Schema<CartProductInterface>({
@@ -78,7 +81,10 @@ export const cartProductSchema = new Schema<CartProductInterface>({
         type: Number,
         required: true
     },
-    thumbnail: String
+    thumbnail: {
+        type: String,
+        required: true
+    }
 })
 
 const ProductModel = model('product', productSchema)

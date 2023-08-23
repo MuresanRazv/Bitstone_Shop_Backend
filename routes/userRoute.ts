@@ -9,11 +9,11 @@ let jsonParser = bodyParser.json()
 
 userRouter.get('/', async (req: any, res: any) => {
     const id = req.query.id
-    res.json(await getUserById(id))
+    res.json(getUserById(id).then(data => data))
 })
 
 userRouter.post('/register', jsonParser, async (req: any, res: any) => {
-    res.json(await addUser(req.body))
+    res.json(addUser(req.body).then(data => data))
 })
 
 userRouter.post('/login', jsonParser, async (req: any, res: any) => {
@@ -21,7 +21,11 @@ userRouter.post('/login', jsonParser, async (req: any, res: any) => {
     let token: string = req.get("Internship-Auth")
     try {
         let login: string | undefined
-        login = token ? await loginByToken(token): await loginUser(user)
+        if (token) {
+            login = await loginByToken(token).then(data => data)
+        } else {
+            login = await loginUser(user).then(data => data)
+        }
         res.json(login)
     }
     catch (err: any) {
@@ -32,7 +36,7 @@ userRouter.post('/login', jsonParser, async (req: any, res: any) => {
 userRouter.post('/logout', jsonParser, async (req: any, res: any) => {
     let token: string = req.get("Internship-Auth")
     try {
-        await logout(token)
+        logout(token).catch(e => console.log(e))
         res.status(200).send("Logout successful")
     }
     catch (err: any) {
