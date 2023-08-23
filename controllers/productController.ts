@@ -12,7 +12,12 @@ export async function getByCategory(category: string): Promise<ProductInterface[
     return ProductModel.find({"category": category}, {"_id": 0})
 }
 
-export async function getProducts(skip: number = 0, limit: number = 0, categories: string[] = []): Promise<ProductInterface[]> {
+export async function getProducts(skip: number = 0, limit: number = 0, categories: string[] = [], input: string = ""): Promise<ProductInterface[]> {
     let mongoose_categories = categories.map(category => ({category: category}))
-    return ProductModel.find({ $or: mongoose_categories}).skip(skip).limit(limit)
+    return ProductModel.find({ $and: [
+            { $or: mongoose_categories },
+            { $or: [{"title": {$regex: `${input}`, $options: "i"}}, {"description": {$regex: `${input}`, $options: "i"}}] }
+        ]})
+        .skip(skip)
+        .limit(limit)
 }
