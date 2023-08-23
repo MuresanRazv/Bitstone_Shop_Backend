@@ -34,28 +34,35 @@ export async function addUser(user: UserInterface) {
     try {
         let newUser = UserModel.create(user)
         createEmptyCart(user.id).then()
-        return newUser
+        return user.token
     } catch (err: any) {
         throw err
     }
 }
 
 export async function loginUser(user: UserLoginInterface) {
-    if (user.username)
-        try {
-            const loggedUser: UserInterface | null = await UserModel.findOne({"username": user.username, "password": user.password})
-            let token = uuidv4()
-            updateToken(loggedUser?.id, token).catch(e => console.log(e))
-            return token
-        } catch (err) { console.log(`Error logging user ${err}`)}
-    else
-        try {
-            const loggedUser: UserInterface | null = await UserModel.findOne({"email": user.email, "password": user.password})
-            let token = uuidv4()
-            updateToken(loggedUser?.id, token).catch(e => console.log(e))
-            return token
-        } catch (err) { console.log(`Error logging user ${err}`) }
-    throw new Error("Invalid username, mail or password!")
+    const userByUsername: UserInterface | null = await UserModel.findOne({"username": user.username})
+    const userByEmail: UserInterface | null = await UserModel.findOne({"email": user.email})
+
+    if (!userByEmail && !userByUsername) {
+        throw new Error("Invalid email or username!")
+    }
+
+    let token = uuidv4()
+    if (userByUsername) {
+        const userByPassword = await UserModel.findOne({"password": user.password})
+        if (!userByPassword)
+            throw new Error("Invalid password!")
+        updateToken(userByUsername.id, token).catch(e => console.log(e))
+    }
+    else if (userByEmail) {
+        const userByPassword = await UserModel.findOne({"password": user.password})
+        if (!userByPassword)
+            throw new Error("Invalid password!")
+        updateToken(userByEmail.id, token).catch(e => console.log(e))
+    }
+
+    return token
 }
 
 export async function loginByToken(token: string) {
