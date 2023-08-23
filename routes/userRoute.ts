@@ -9,11 +9,15 @@ let jsonParser = bodyParser.json()
 
 userRouter.get('/', async (req: any, res: any) => {
     const id = req.query.id
-    res.json(getUserById(id).then(data => data))
+    res.json(await getUserById(id).then(data => data))
 })
 
 userRouter.post('/register', jsonParser, async (req: any, res: any) => {
-    res.json(addUser(req.body).then(data => data))
+    try {
+        res.json(await addUser(req.body).then(data => data))
+    } catch (err: any) {
+        res.json({ "message": err.message })
+    }
 })
 
 userRouter.post('/login', jsonParser, async (req: any, res: any) => {

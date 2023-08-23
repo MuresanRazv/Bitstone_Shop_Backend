@@ -1,6 +1,7 @@
 import UserModel, {UserInterface, UserLoginInterface} from "../models/user.js";
 import {createEmptyCart} from "./cartController.js";
 import { v4 as uuidv4 } from 'uuid';
+import {throws} from "assert";
 
 export async function getUserById(id: number): Promise<UserInterface> {
     return UserModel.find({"id": id}, {"_id": 0}).then((data) => data[0])
@@ -16,15 +17,26 @@ export async function updateToken(userID: number | undefined, token: string) {
     })
 }
 
-export async function addUser(user: any) {
+export async function addUser(user: UserInterface) {
+    let userByUsername = await UserModel.findOne({"username": user.username}),
+        userByEmail = await UserModel.findOne({"email": user.email})
+
+    if (userByUsername) {
+        throw new Error("Username already exists!")
+    }
+    else if (userByEmail) {
+        throw new Error("Email already exists!")
+    }
+
+    user.id = await UserModel.count() + 1
+    user.token = uuidv4()
+
     try {
-        user.id = await UserModel.count() + 1
-        user.token = uuidv4()
         let newUser = UserModel.create(user)
         createEmptyCart(user.id).then()
         return newUser
-    } catch (err) {
-        console.log(`Error creating user ${err}`)
+    } catch (err: any) {
+        throw err
     }
 }
 
