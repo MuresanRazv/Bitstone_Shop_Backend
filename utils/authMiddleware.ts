@@ -7,7 +7,7 @@ export const verifyToken = async (req: any, res: any) => {
     const token = req.get("Internship-Auth")
 
     if (!token) {
-        return res.status(403).send("A token is required for authentication")
+        return res.status(403).send("A token is required!")
     }
     try {
         jwt.verify(token, process.env.TOKEN_KEY as string)

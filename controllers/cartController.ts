@@ -25,6 +25,16 @@ export async function createEmptyCart(userID: number) {
     CartModel.create(newCart).then()
 }
 
+export async function emptyCart(userID: number) {
+    CartModel.findOneAndUpdate({"userID": userID}, {
+        products: [],
+        total: 0,
+        discountedTotal: 0,
+        totalProducts: 0,
+        totalQuantity: 0,
+    })
+}
+
 function getProduct(productID: number, products: CartProductInterface[]): {} | CartProductInterface {
     for (let product of products) {
         if (product.id === productID)

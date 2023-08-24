@@ -1,9 +1,10 @@
 import mongoose from 'mongoose'
 import express from 'express'
 import cors from 'cors'
-import productsRouter from "./routes/productRoute.js";
+import {productsRouter} from "./routes/productRoute.js";
 import {cartRouter} from "./routes/cartRoute.js";
 import {userRouter} from "./routes/userRoute.js";
+import {ordersRouter} from "./routes/orderRoute.js";
 
 
 const connectDB = async () => {
@@ -25,6 +26,7 @@ app.use(cors())
 app.use('/products', productsRouter)
 app.use('/cart', cartRouter)
 app.use('/user', userRouter)
+app.use('/order', ordersRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

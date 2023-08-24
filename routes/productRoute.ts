@@ -1,7 +1,7 @@
 import express from 'express'
 import {getProductById, getProducts} from "../controllers/productController.js";
 
-const productsRouter = express.Router()
+export const productsRouter = express.Router()
 
 productsRouter.get('/product', async (req: any, res: any) => {
     const id = req.query.id,
@@ -20,5 +20,3 @@ productsRouter.get('/product', async (req: any, res: any) => {
         res.status(404).send({"message": err.message})
     }
 })
-
-export default productsRouter
