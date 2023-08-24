@@ -1,6 +1,9 @@
 import UserModel, {UserInterface, UserLoginInterface} from "../models/user.js";
 import {createEmptyCart} from "./cartController.js";
 import {v4 as uuidv4} from 'uuid';
+import bcrypt from 'bcryptjs'
+import {config} from "dotenv";
+import {createToken} from "../utils/authMiddleware.js";
 
 export async function getUserById(id: number): Promise<UserInterface> {
     return UserModel.find({"id": id}, {"_id": 0}).then((data) => data[0])
@@ -17,6 +20,7 @@ export async function updateToken(userID: number | undefined, token: string) {
 }
 
 export async function addUser(user: UserInterface) {
+    config()
     let userByUsername = await UserModel.findOne({"username": user.username}),
         userByEmail = await UserModel.findOne({"email": user.email})
 
@@ -28,7 +32,8 @@ export async function addUser(user: UserInterface) {
     }
 
     user.id = await UserModel.count() + 1
-    user.token = uuidv4()
+    user.password = await bcrypt.hash(user.password, 10);
+    user.token = createToken({ user_id: user.id, email: user.email })
 
     try {
         let newUser = UserModel.create(user)
@@ -47,22 +52,20 @@ export async function loginUser(user: UserLoginInterface) {
         throw new Error("Invalid email or username!")
     }
 
-    let token = uuidv4()
-
     if (userByUsername) {
-        const userByPassword = await UserModel.findOne({"password": user.password})
-        if (!userByPassword)
+        if (!await bcrypt.compare(user.password, userByUsername.password))
             throw new Error("Invalid password!")
+        let token = createToken({ user_id: userByUsername.id, email: userByUsername.email})
         await updateToken(userByUsername.id, token).catch(e => console.log(e))
+        return token
     }
     else if (userByEmail) {
-        const userByPassword = await UserModel.findOne({"password": user.password})
-        if (!userByPassword)
+        if (!await bcrypt.compare(user.password, userByEmail.password))
             throw new Error("Invalid password!")
+        let token = createToken({ user_id: userByEmail.id, email: userByEmail.email})
         await updateToken(userByEmail.id, token).catch(e => console.log(e))
+        return token
     }
-
-    return token
 }
 
 export async function loginByToken(token: string) {

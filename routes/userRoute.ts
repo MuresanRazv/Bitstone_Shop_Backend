@@ -2,18 +2,14 @@ import express from 'express'
 import {addUser, getUserById, getUserByToken, loginByToken, loginUser, logout} from "../controllers/userController.js";
 import bodyParser from "body-parser";
 import {UserLoginInterface} from "../models/user.js";
+import {verifyToken} from "../utils/authMiddleware.js";
 
 export const userRouter = express.Router()
 
 let jsonParser = bodyParser.json()
 
-userRouter.get('/', async (req: any, res: any) => {
-    try {
-        const token = req.get("Internship-Auth")
-        res.json(await getUserByToken(token).then(data => data))
-    } catch (err: any) {
-        res.status(404).send({"message": err.message})
-    }
+userRouter.get('/', verifyToken, (req, res) => {
+    res.status(200).send("Authentication Success")
 })
 
 userRouter.post('/register', jsonParser, async (req: any, res: any) => {
