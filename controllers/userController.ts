@@ -3,10 +3,7 @@ import {createEmptyCart} from "./cartController.js";
 import bcrypt from 'bcryptjs'
 import {config} from "dotenv";
 import {createToken} from "../utils/authMiddleware.js";
-
-export async function getUserById(id: number): Promise<UserInterface> {
-    return UserModel.find({"id": id}, {"_id": 0}).then((data) => data[0])
-}
+import OrderModel from "../models/order.js";
 
 export async function getUserByToken(token: string): Promise<UserInterface> {
     return await UserModel.find({"token": token}, {"_id": 0}).then((data) => data[0])
@@ -82,4 +79,16 @@ export async function logout(token: string) {
     await UserModel.findOneAndUpdate({"token": token}, {
         "token": ""
     })
+}
+
+export async function getOrders(token: string) {
+    let user = await getUserByToken(token)
+    if (!(user))
+        throw new Error("Invalid user token!")
+
+    const order = await OrderModel.find({"userID": user.id}, {"_id": 0})
+
+    if (!order)
+        throw new Error("No orders for this user!")
+    else return order
 }

@@ -6,16 +6,25 @@ import {emptyCart, getCartByToken} from "../controllers/cartController.js";
 import jwt from "jsonwebtoken";
 import {config} from "dotenv";
 import bodyParser from "body-parser";
+import {getOrders} from "../controllers/userController.js";
 const jsonParser = bodyParser.json()
 
 export const ordersRouter = express.Router()
 
-ordersRouter.get('/', verifyToken, async (req: any, res: any) => {
+ordersRouter.get('/', async (req: any, res: any) => {
+    config()
     const id = req.query.id,
-        userID = req.query.userId
+        userID = req.query.userId,
+        token = req.get("Internship-Auth")
+    try {
+        jwt.verify(token, process.env.TOKEN_KEY as string)
+
+    } catch (err) {
+        return res.status(401).send("Invalid Token")
+    }
 
     try {
-        res.json(await getOrderById(id, userID))
+        res.json(await getOrders(token))
     } catch (err: any) {
         res.status(404).send({"message": err.message})
     }
