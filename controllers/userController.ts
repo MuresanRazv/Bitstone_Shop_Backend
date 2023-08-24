@@ -1,6 +1,5 @@
 import UserModel, {UserInterface, UserLoginInterface} from "../models/user.js";
 import {createEmptyCart} from "./cartController.js";
-import {v4 as uuidv4} from 'uuid';
 import bcrypt from 'bcryptjs'
 import {config} from "dotenv";
 import {createToken} from "../utils/authMiddleware.js";

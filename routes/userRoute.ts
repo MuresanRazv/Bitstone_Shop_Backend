@@ -1,5 +1,5 @@
 import express from 'express'
-import {addUser, getUserById, getUserByToken, loginByToken, loginUser, logout} from "../controllers/userController.js";
+import {addUser, loginByToken, loginUser, logout} from "../controllers/userController.js";
 import bodyParser from "body-parser";
 import {UserLoginInterface} from "../models/user.js";
 import {verifyToken} from "../utils/authMiddleware.js";

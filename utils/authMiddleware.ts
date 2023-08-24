@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import {config} from 'dotenv'
 import {getUserByToken} from "../controllers/userController.js";
 
-export const verifyToken = async (req: any, res: any, next: any) => {
+export const verifyToken = async (req: any, res: any) => {
     config()
     const token = req.get("Internship-Auth")
 
