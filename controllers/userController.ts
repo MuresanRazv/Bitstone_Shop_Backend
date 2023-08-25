@@ -5,18 +5,39 @@ import {config} from "dotenv";
 import {createToken} from "../utils/authMiddleware.js";
 import OrderModel from "../models/order.js";
 
+/**
+ *
+ * @param token - token of a logged user
+ *
+ * makes a database query and retrieves a user based on its token
+ *
+ */
 export async function getUserByToken(token: string): Promise<UserInterface> {
     return await UserModel.find({"token": token}, {"_id": 0}).then((data) => data[0])
 }
 
+/**
+ *
+ * @param userID - id of a user
+ * @param token - token of a logged user
+ *
+ * updates the token of a user
+ *
+ */
 export async function updateToken(userID: number | undefined, token: string) {
     await UserModel.findOneAndUpdate({"id": userID}, {
         "token": token
     })
 }
 
+/**
+ *
+ * @param user - a user object
+ *
+ * verifies if the user exists already and if not it add it to the database
+ *
+ */
 export async function addUser(user: UserInterface) {
-    config()
     let userByUsername = await UserModel.findOne({"username": user.username}),
         userByEmail = await UserModel.findOne({"email": user.email})
 
@@ -40,9 +61,17 @@ export async function addUser(user: UserInterface) {
     }
 }
 
+/**
+ *
+ * @param user - a user object
+ *
+ * checks if the user/email and password match and then returns a new token with a lifetime of 2 hours
+ *
+ */
+
 export async function loginUser(user: UserLoginInterface) {
-    const userByUsername: UserInterface | null = await UserModel.findOne({"username": user.username})
-    const userByEmail: UserInterface | null = await UserModel.findOne({"email": user.email})
+    const userByUsername: UserInterface | null = await UserModel.findOne({"username": user.username}),
+        userByEmail: UserInterface | null = await UserModel.findOne({"email": user.email})
 
     if (!userByEmail && !userByUsername) {
         throw new Error("Invalid email or username!")
@@ -64,6 +93,13 @@ export async function loginUser(user: UserLoginInterface) {
     }
 }
 
+/**
+ *
+ * @param token - token of a user
+ *
+ * checks if there exists a user with the token given as parameter and if it matches, returns the user
+ *
+ */
 export async function loginByToken(token: string) {
     let user = await getUserByToken(token)
 
@@ -72,6 +108,13 @@ export async function loginByToken(token: string) {
     else throw new Error("Invalid token!")
 }
 
+/**
+ *
+ * @param token - token of a logged user
+ *
+ * checks if there is a user logged in with that token and if so, it deletes its token from the database
+ *
+ */
 export async function logout(token: string) {
     if (!(await getUserByToken(token)))
         throw new Error("You are not logged in!")
@@ -81,6 +124,13 @@ export async function logout(token: string) {
     })
 }
 
+/**
+ *
+ * @param token - token of a logged user
+ *
+ * checks if there is a logged user with that token and then returns the user's orders
+ *
+ */
 export async function getOrders(token: string) {
     let user = await getUserByToken(token)
     if (!(user))

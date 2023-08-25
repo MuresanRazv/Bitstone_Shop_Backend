@@ -5,6 +5,7 @@ import {productsRouter} from "./routes/productRoute.js";
 import {cartRouter} from "./routes/cartRoute.js";
 import {userRouter} from "./routes/userRoute.js";
 import {ordersRouter} from "./routes/orderRoute.js";
+import {config} from "dotenv";
 
 
 const connectDB = async () => {
@@ -17,7 +18,11 @@ const connectDB = async () => {
     }
 }
 
+// connect database with backend
 connectDB()
+
+// used for getting environment variables
+config()
 
 const app = express(),
     port = 3000

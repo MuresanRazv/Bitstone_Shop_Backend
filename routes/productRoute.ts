@@ -3,6 +3,9 @@ import {getProductById, getProducts} from "../controllers/productController.js";
 
 export const productsRouter = express.Router()
 
+/**
+ * get the products based on parameters given in query string
+ */
 productsRouter.get('/product', async (req: any, res: any) => {
     const id = req.query.id,
         skip = req.query.skip ? req.query.skip : undefined,

@@ -11,13 +11,13 @@ const jsonParser = bodyParser.json()
 
 export const ordersRouter = express.Router()
 
+/**
+ * get the token from header, verify it and the return the orders of the user which has that token
+ */
 ordersRouter.get('/', async (req: any, res: any) => {
-    config()
-    const id = req.query.id,
-        userID = req.query.userId,
-        token = req.get("Internship-Auth")
+    const token = req.get("Internship-Auth")
     try {
-        jwt.verify(token, process.env.TOKEN_KEY as string)
+        jwt.verify(token, process.env.TOKEN_KEY!)
 
     } catch (err) {
         return res.status(401).send("Invalid Token")
@@ -30,10 +30,22 @@ ordersRouter.get('/', async (req: any, res: any) => {
     }
 })
 
-ordersRouter.post('/update', verifyToken, async (req: any, res: any) => {
+/**
+ * get the token from the header, verify it and then update the status of an order based on the information from the
+ * body
+ */
+ordersRouter.post('/update', jsonParser, async (req: any, res: any) => {
     const status = req.body.status,
         id = req.body.id,
-        userID = req.body.userID
+        userID = req.body.userID,
+        token = req.get("Internship-Auth")
+
+    try {
+        jwt.verify(token, process.env.TOKEN_KEY!)
+
+    } catch (err) {
+        return res.status(401).send("Invalid Token")
+    }
 
     try {
         res.json(await updateStatus(id, userID, status))
@@ -42,13 +54,15 @@ ordersRouter.post('/update', verifyToken, async (req: any, res: any) => {
     }
 })
 
+/**
+ * get the token from the header, verify it and then add the order
+ */
 ordersRouter.post('/add', jsonParser, async (req: any, res: any) => {
-    config()
     const orderInformation = req.body.order,
         token = req.get("Internship-Auth")
 
     try {
-        jwt.verify(token, process.env.TOKEN_KEY as string)
+        jwt.verify(token, process.env.TOKEN_KEY!)
 
     } catch (err) {
         return res.status(401).send("Invalid Token")
@@ -70,11 +84,11 @@ ordersRouter.post('/add', jsonParser, async (req: any, res: any) => {
         id: await OrderModel.count() + 1,
         street: orderInformation.street,
         status: [status],
-        discountedTotal: cart.discountedTotal as number
+        discountedTotal: cart.discountedTotal!
     }
-    await emptyCart(cart.userId)
 
     try {
+        await emptyCart(cart.userId)
         res.json(await addOrder(order))
     } catch (err: any) {
         res.status(404).send({"message": err.message})

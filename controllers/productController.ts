@@ -1,17 +1,27 @@
 import ProductModel, {ProductInterface} from "../models/product.js";
 
-export async function getAllProducts() {
-    return ProductModel.findOne({}, {"_id": 0}).where('price').gt(1).exec().then((data) => JSON.stringify(data))
-}
-
+/**
+ *
+ * @param id - id of a product
+ *
+ * makes a database query which finds and returns a product by id
+ *
+ */
 export async function getProductById(id: number): Promise<ProductInterface> {
     return ProductModel.find({"id": id}, {"_id": 0}).then((data) => data[0])
 }
 
-export async function getByCategory(category: string): Promise<ProductInterface[]> {
-    return ProductModel.find({"category": category}, {"_id": 0})
-}
-
+/**
+ *
+ * @param skip - number of products to skip
+ * @param limit - number of products to return
+ * @param categories - array of categories
+ * @param input - an input to search products by their title and description
+ *
+ * this function is used to various queries to the database of products such as: getting a certain number of products or
+ * getting products by a certain input or any number of categories
+ *
+ */
 export async function getProducts(skip: number = 0, limit: number = 0, categories: string[] = [], input: string = ""): Promise<ProductInterface[]> {
     let mongoose_categories = categories.map(category => ({category: category}))
 
