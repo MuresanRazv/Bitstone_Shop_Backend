@@ -22,4 +22,4 @@ productsRouter.get('/product', async (req: any, res: any) => {
     } catch (err: any) {
         res.status(404).send({"message": err.message})
     }
-})
+});
