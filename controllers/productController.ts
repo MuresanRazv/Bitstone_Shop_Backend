@@ -1,5 +1,4 @@
 import ProductModel, {ProductInterface} from "../models/product.js";
-
 /**
  *
  * @param id - id of a product

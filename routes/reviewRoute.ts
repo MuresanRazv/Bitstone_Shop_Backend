@@ -55,17 +55,6 @@ reviewRouter.post('/:id', jsonParser,  async (req: any, res: any) => {
  * Get all reviews for a product
  */
 reviewRouter.get('/:id', async (req: any, res: any) => {
-    const token = req.get("Internship-Auth");
-    if (!token) {
-        return res.status(403).send("A token is required!");
-    }
-    try {
-        jwt.verify(token, process.env.TOKEN_KEY!);
-    }
-    catch (err) {
-        return res.status(401).send("Invalid Token");
-    }
-
     const productId = req.params.id;
     try {
         const reviews = await ProductReviewModel.find({productId: productId});
@@ -92,9 +81,13 @@ reviewRouter.delete('/:id', async (req: any, res: any) => {
         return res.status(401).send("Invalid Token");
     }
     const reviewId = req.params.id;
+    const user = await getUserByToken(token);
+    const userId = user.id;
+
     try {
-        const deletedReview = await ProductReviewModel.findByIdAndDelete(reviewId);
-        if (!deletedReview) {
+        const deletedReview = await ProductReviewModel.deleteOne({_id: reviewId, userId: userId});
+        if (deletedReview.deletedCount === 0) {
+            res.status(404).send("Review not found or is not yours.");
             return;
         }
         const reviews = await ProductReviewModel.find();
@@ -104,5 +97,4 @@ reviewRouter.delete('/:id', async (req: any, res: any) => {
         console.log(err);
         res.status(500).json({message: err});
     }
-
 });
