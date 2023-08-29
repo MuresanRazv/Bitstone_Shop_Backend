@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
-import {getUserByToken} from "../services/userServices";
+import {getOrders, getUserByToken} from "../services/userServices";
 import ProductReviewModel, {ProductReviewInterface} from "../models/review";
+import {getCartByToken} from "../services/cartServices";
 
 /**
  * Add a review for a product
@@ -18,11 +19,22 @@ export async function addReviewController(req: any, res: any) {
     }
 
     const user = await getUserByToken(token);
+    const orders = await getOrders(token)
 
     const userId = user.id,
         productId = req.params.id,
         username = user.username,
         {title, description, rating} = req.body;
+
+    let ordered = false
+    for (let order of orders) {
+        (order.products.map((product) => { if (product.id === Number(productId)) ordered = true }))
+    }
+
+    if (!ordered) {
+        return res.status(400).send({"message": "You can leave a review if you bought the product!"})
+    }
+
     if(!title || !description || !rating) {
         res.status(400).send("All fields are required");
         return;
@@ -39,11 +51,11 @@ export async function addReviewController(req: any, res: any) {
 
     try {
         await ProductReviewModel.create(review);
-        res.status(200).send("Review added successfully");
+        res.status(200).send({"message": "Review added successfully"});
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({message: err});
+        res.status(500).json({"message": err});
     }
 }
 
@@ -51,17 +63,6 @@ export async function addReviewController(req: any, res: any) {
  * Get all reviews for a product
  */
 export async function getReviewsController(req: any, res: any) {
-    const token = req.get("Internship-Auth");
-    if (!token) {
-        return res.status(403).send("A token is required!");
-    }
-    try {
-        jwt.verify(token, process.env.TOKEN_KEY!);
-    }
-    catch (err) {
-        return res.status(401).send("Invalid Token");
-    }
-
     const productId = req.params.id;
     try {
         const reviews = await ProductReviewModel.find({productId: productId});
