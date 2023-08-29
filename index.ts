@@ -7,6 +7,7 @@ import {userRouter} from "./routes/userRoute.js";
 import {ordersRouter} from "./routes/orderRoute.js";
 import {config} from "dotenv";
 import {reviewRouter} from "./routes/reviewRoute.js";
+import {returnRouter} from "./routes/returnRoute";
 
 
 const connectDB = async () => {
@@ -34,6 +35,7 @@ app.use('/cart', cartRouter)
 app.use('/user', userRouter)
 app.use('/order', ordersRouter)
 app.use('/reviews', reviewRouter)
+app.use('/returns', returnRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

@@ -11,7 +11,6 @@ export async function getOrdersController(req: any, res: any) {
     const token = req.get("Internship-Auth")
     try {
         jwt.verify(token, process.env.TOKEN_KEY!)
-
     } catch (err) {
         res.status(401).send({"message": "Invalid Token"})
     }
