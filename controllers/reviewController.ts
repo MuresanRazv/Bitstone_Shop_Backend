@@ -9,13 +9,13 @@ import {getCartByToken} from "../services/cartServices";
 export async function addReviewController(req: any, res: any) {
     const token = req.get("Internship-Auth");
     if (!token) {
-        return res.status(403).send("A token is required!");
+        return res.status(403).send({"message": "A token is required!"});
     }
     try {
         jwt.verify(token, process.env.TOKEN_KEY!);
     }
     catch (err) {
-        return res.status(401).send("Invalid Token");
+        return res.status(401).send({"message": "Invalid Token! You must be logged in to leave a review!"});
     }
 
     const user = await getUserByToken(token);
@@ -36,7 +36,7 @@ export async function addReviewController(req: any, res: any) {
     }
 
     if(!title || !description || !rating) {
-        res.status(400).send("All fields are required");
+        res.status(400).send({"message": "All fields are required"});
         return;
     }
 
@@ -65,11 +65,7 @@ export async function addReviewController(req: any, res: any) {
 export async function getReviewsController(req: any, res: any) {
     const productId = req.params.id;
     try {
-        const reviews = await ProductReviewModel.find({productId: productId});
-        if (reviews.length === 0) {
-            return;
-        }
-        res.status(200).json(reviews);
+        ProductReviewModel.find({productId: productId}).then(data => res.json(data));
     }
     catch (err) {
         console.log(err);
@@ -93,12 +89,11 @@ export async function deleteReviewController(req: any, res: any) {
     }
     const reviewId = req.params.id;
     try {
-        const deletedReview = await ProductReviewModel.findByIdAndDelete(reviewId);
+        const deletedReview = await ProductReviewModel.findByIdAndDelete(reviewId)
         if (!deletedReview) {
             return;
         }
-        const reviews = await ProductReviewModel.find();
-        res.status(200).json(reviews);
+        ProductReviewModel.find().then(reviews => res.json(reviews));
     }
     catch (err) {
         console.log(err);
